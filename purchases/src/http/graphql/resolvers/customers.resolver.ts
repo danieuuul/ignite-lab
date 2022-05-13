@@ -1,5 +1,11 @@
 import { UseGuards } from '@nestjs/common';
-import { Resolver, Query, ResolveField, Parent } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  ResolveField,
+  Parent,
+  ResolveReference,
+} from '@nestjs/graphql';
 import { CustomersService } from '../../../services/customers.service';
 import { ProductsService } from '../../../services/products.service';
 import { PurchasesService } from '../../../services/purchases.service';
@@ -27,4 +33,10 @@ export class CustomersResolver {
   me(@CurrentUser() user: AuthUser) {
     return this.customersService.getCustomerByAuthUserId(user.sub);
   }
+
+  @ResolveReference()
+  resolveReference(reference: { authUserId: string }) {
+    return this.customersService.getCustomerByAuthUserId(reference.authUserId);
+  }
+  // OBS: se tivesse um serviço de autenticação próprio (não o Auth0), o resolver dele seria o "master" da ligação entre customer e student
 }
